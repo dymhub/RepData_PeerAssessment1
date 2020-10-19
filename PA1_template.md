@@ -7,9 +7,7 @@ output:
     keep_md: yes
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
 
 ## Introduction
 
@@ -33,9 +31,44 @@ The dataset is stored in a comma-separated-value (CSV) file and there are a tota
 This Markdown file will now run through the data processing code on a question by question basis. Before the code required for the questions is reported, some intitial set up is required. To begin an working directory must be set up which only contains the unzipped data.
 
 Next, the following code must be run to load the relvant libraries.
-```{r echo = TRUE}
+
+```r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 library(lubridate)
+```
+
+```
+## 
+## Attaching package: 'lubridate'
+```
+
+```
+## The following object is masked from 'package:base':
+## 
+##     date
+```
+
+```r
 library(ggplot2)
 ```
 
@@ -44,8 +77,8 @@ Now all the prerequisites have been met to allow proccessing of the data as per 
 ### 1. Code for reading in the dataset and/or processing the data
 <br />
 
-```{r echo = TRUE}
 
+```r
 # Define function to read data
 read.data <- function(file.list){
         # List files in Working Directory 
@@ -59,7 +92,7 @@ read.data <- function(file.list){
 
 # Execute function
 df <- read.data(1)
-```  
+```
 <br />
 <br />
 <br />
@@ -69,7 +102,8 @@ df <- read.data(1)
 ### 2. Histogram of the total number of steps taken each day
 <br />
 
-```{r echo = TRUE}
+
+```r
 # Define function which takes the data and summarises the total number of steps recorded each day
 total.steps <- function(df){
         # Remove NA values, group by date and then sum the total number of steps by date
@@ -86,8 +120,9 @@ hist(tot_step$Total,
      breaks = 20, 
      xlab =  "Total Steps", 
      main = "Histogram - Total steps per day")
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 <br />
 <br />
 <br />
@@ -95,9 +130,15 @@ hist(tot_step$Total,
 
 ### 3. Mean and median number of steps taken each day
 <br />
-```{r echo = TRUE}
+
+```r
 # Display a summary of total steps recorded per day
 summary(tot_step$Total)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##      41    8841   10765   10766   13294   21194
 ```
 <br />
 <br />
@@ -106,7 +147,8 @@ summary(tot_step$Total)
 
 ### 4. Time series plot of the average number of steps taken
 <br />
-```{r echo = TRUE}
+
+```r
 # Define function which takes a data frame and summarises the average steps taken in each interval
 mean.steps <- function(df){
         # Remove NA values, group by interval and take the mean of the steps recorded for each interval
@@ -126,6 +168,8 @@ plot(mean_step$interval,
      main = "Average steps over time",
      type = "l")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
 <br />
 <br />
 <br />
@@ -134,14 +178,20 @@ plot(mean_step$interval,
 ### 5.The 5-minute interval that, on average, contains the maximum number of steps
 <br />
 
-``` {r echo = TRUE}
 
+```r
 # Sort the data frame of interval means by Highest first
 Maximum <- arrange(mean_step, desc(Average))
 
 # Report the first row of the new data frame
 Maximum[1,]
+```
 
+```
+## # A tibble: 1 x 2
+##   interval Average
+##      <int>   <dbl>
+## 1      835    206.
 ```
 <br />
 <br />
@@ -151,8 +201,8 @@ Maximum[1,]
 ### 6.Code to describe and show a strategy for imputing missing data
 <br />
 
-```{r echo = TRUE}
 
+```r
 # Define a function which replaces the NA values of the original data frame with median values per interval based on the rest of the data
 NA.steps <- function(df){
         # Remove NA values, group by interval, calculate the median for each interval and arrange by intervals.
@@ -175,10 +225,15 @@ NA.steps <- function(df){
 # Calculate & report the number of NA rows in data frame
 No_NA <- nrow(df) - sum(complete.cases(df))
 No_NA
+```
 
+```
+## [1] 2304
+```
+
+```r
 # Exectute function using data frame from question 1
 NA_df <- NA.steps(df)
-
 ```
 <br />
 <br />
@@ -188,7 +243,8 @@ NA_df <- NA.steps(df)
 ### 7.Histogram of the total number of steps taken each day after missing values are imputed
 <br />
 
-```{r echo = TRUE}
+
+```r
 # Execture the total.steps function using the updated data frame from question 6
 Total.NA.steps <- total.steps(NA_df)
 
@@ -197,10 +253,18 @@ hist(Total.NA.steps$Total,
      breaks = 20, 
      xlab =  "Total Steps", 
      main = "Histogram - Total steps per day")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+
+```r
 # Report mean and median of Total steps per day data from new data frame
 summary(Total.NA.steps$Total)
+```
 
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##      41    6778   10395    9504   12811   21194
 ```
 <br />
 <br />
@@ -211,8 +275,8 @@ summary(Total.NA.steps$Total)
 <br />
 
 
-``` {r echo = TRUE}
 
+```r
 # Define a function which groups the data by weekdays and weekends
 day.steps <- function(df){
         # Add a column to the original data frame which includes the day for each date
@@ -238,9 +302,9 @@ Day.steps <- day.steps(NA_df)
  g + geom_line() +
          facet_grid(Weekend ~.) +
          ggtitle("Averge steps per interval")
-
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
 <br />
 <br />
 <br />
@@ -252,7 +316,8 @@ Day.steps <- day.steps(NA_df)
 
 Below is tall of the raw code used in this assignment. The entirity of the code is found in the report above.
 
-``` {r eval = FALSE}
+
+```r
 # Set working directory
 setwd("~/Documents/R/Reproducible Research/Project 1")
 
@@ -370,6 +435,5 @@ Day.steps <- day.steps(NA_df)
  g + geom_line() +
          facet_grid(Weekend ~.) +
          ggtitle("Averge steps per interval")
-
 ```
 
